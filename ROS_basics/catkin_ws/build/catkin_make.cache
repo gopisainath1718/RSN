@@ -1,0 +1,2 @@
+sample
+-DCATKIN_DEVEL_PREFIX=/home/gopisainath/EECE5554/LAB0/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/gopisainath/EECE5554/LAB0/catkin_ws/install -G Unix Makefiles

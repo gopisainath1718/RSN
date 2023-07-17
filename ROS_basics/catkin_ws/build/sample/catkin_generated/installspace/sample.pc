@@ -1,0 +1,8 @@
+prefix=/home/gopisainath/EECE5554/LAB0/catkin_ws/install
+
+Name: sample
+Description: Description of sample
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
