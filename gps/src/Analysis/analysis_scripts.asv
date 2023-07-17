@@ -1,0 +1,100 @@
+% rosinit
+outdoor_stat_bag = rosbag("/home/gopisainath/EECE5554/LAB2/src/data/free_stationary .bag");
+outdoor_walking_bag = rosbag("/home/gopisainath/EECE5554/LAB2/src/data/walking_free.bag");
+occluded_walking_bag = rosbag("/home/gopisainath/EECE5554/LAB2/src/data/walking_occluded.bag");
+occluded_stat_bag = rosbag("/home/gopisainath/EECE5554/LAB2/src/data/occluded_stat.bag");
+
+outdoor_stat_topic = select(outdoor_stat_bag, 'Topic', '/gps');
+outdoor_walking_topic = select(outdoor_walking_bag, 'Topic', '/gps');
+occluded_walking_topic = select(occluded_walking_bag, 'Topic', '/gps');
+occluded_stat_topic = select(occluded_stat_bag, 'Topic', '/gps');
+
+outdoor_stat_msgs = readMessages(outdoor_stat_topic, 'DataFormat', 'Struct');
+outdoor_walking_msgs = readMessages(outdoor_walking_topic, 'DataFormat', 'Struct');
+occluded_stat_msgs = readMessages(occluded_stat_topic, 'DataFormat', 'Struct');
+occluded_walking_msgs = readMessages(occluded_walking_topic, 'DataFormat', 'Struct');
+
+outdoor_stat_Easting = 328140.65;
+outdoor_stat_Northing = 4689478.37;
+
+occluded_stat_Easting = 328207.51;
+occluded_stat_Northing = 4689334.18;
+
+
+outdoor_stat_x_values = cellfun(@(i) double(i.UTMEasting), outdoor_stat_msgs);
+outdoor_stat_y_values = cellfun(@(i) double(i.UTMNorthing), outdoor_stat_msgs);
+outdoor_stat_x_values = outdoor_stat_x_values- outdoor_stat_msgs{1}.UTMEasting;
+outdoor_stat_y_values = outdoor_stat_y_values - outdoor_stat_msgs{1}.UTMNorthing;
+figure ('Name','outdoor_stat UTMNorthing vs UTMEasting');
+scatter(outdoor_stat_x_values, outdoor_stat_y_values, '.');
+xlabel('UTMEasting outdoor_stat (meters)');
+ylabel('UTMNorthing outdoor_stat (meters)');
+% title('Indoor UTMnorthing vs UTmEsting');
+
+outdoor_stat_distance_x = cellfun(@(i) double(i.UTMEasting - outdoor_stat_Easting),outdoor_stat_msgs );
+outdoor_stat_distance_y = cellfun(@(i) double(i.UTMNorthing - outdoor_stat_Northing),outdoor_stat_msgs );
+outdoor_stat_distance = sqrt(outdoor_stat_distance_x.^2 + outdoor_stat_distance_y.^2);
+figure('Name','outdoor_stat_Histogram');
+histogram(outdoor_stat_distance);
+ylabel('Count');
+xlabel('Indoor_distance (meters)');
+
+
+occluded_stat_x_values = cellfun(@(i) double(i.UTMEasting), occluded_stat_msgs);
+occluded_stat_y_values = cellfun(@(i) double(i.UTMNorthing), occluded_stat_msgs);
+occluded_stat_x_values = occluded_stat_x_values- occluded_stat_msgs{1}.UTMEasting;
+occluded_stat_y_values = occluded_stat_y_values - occluded_stat_msgs{1}.UTMNorthing;
+figure ('Name','occluded_stat UTMNorthing vs UTMEasting');
+scatter(occluded_stat_x_values, occluded_stat_y_values, '.');
+xlabel('UTMEasting occluded_stat (meters)');
+ylabel('UTMNorthing occluded_stat (meters)');
+% title('Indoor UTMnorthing vs UTmEsting');
+
+occluded_stat_distance_x = cellfun(@(i) double(i.UTMEasting - occluded_stat_Easting),occluded_stat_msgs );
+occluded_stat_distance_y = cellfun(@(i) double(i.UTMNorthing - occluded_stat_Northing),occluded_stat_msgs );
+occluded_stat_distance = sqrt(occluded_stat_distance_x.^2 + occluded_stat_distance_y.^2);
+figure('Name','occluded stat Histogram');
+histogram(occluded_stat_distance);
+ylabel('Count');
+xlabel('occluded stat distance (meters)');
+
+
+outdoor_walking_x_values = cellfun(@(i) double(i.UTMEasting), outdoor_walking_msgs);
+outdoor_walking_y_values = cellfun(@(i) double(i.UTMNorthing), outdoor_walking_msgs);
+outdoor_walking_x_values = outdoor_walking_x_values- outdoor_walking_msgs{1}.UTMEasting;
+outdoor_walking_y_values = outdoor_walking_y_values - outdoor_walking_msgs{1}.UTMNorthing;
+figure ('Name','outdoor walking UTMNorthing vs UTMEasting');
+scatter(outdoor_walking_x_values, outdoor_walking_y_values, '.');
+xlabel('UTMEasting outdoor walking (meters)');
+ylabel('UTMNorthing outdoor walking (meters)');
+% title('Indoor UTMnorthing vs UTmEsting');
+
+occluded_walking_x_values = cellfun(@(i) double(i.UTMEasting), occluded_walking_msgs);
+occluded_walking_y_values = cellfun(@(i) double(i.UTMNorthing), occluded_walking_msgs);
+occluded_walking_x_values = occluded_walking_x_values- outdoor_walking_msgs{1}.UTMEasting;
+outdoor_walking_y_values = outdoor_walking_y_values - outdoor_walking_msgs{1}.UTMNorthing;
+figure ('Name','outdoor walking UTMNorthing vs UTMEasting');
+scatter(outdoor_walking_x_values, outdoor_walking_y_values, '.');
+xlabel('UTMEasting outdoor walking (meters)');
+ylabel('UTMNorthing outdoor walking (meters)');
+
+
+
+
+walking_x_values = cellfun(@(i) double(i.UTMEasting), walking_msgs);
+walking_y_values = cellfun(@(i) double(i.UTMNorthing), walking_msgs);
+walking_x_values = walking_x_values - walking_msgs{1}.UTMEasting;
+walking_y_values = walking_y_values - walking_msgs{1}.UTMNorthing;
+figure ('Name','Walking UTMNorthing vs UTMEasting');
+p = polyfit(walking_x_values, walking_y_values, 1);
+f = polyval(p, walking_x_values);
+error_y = walking_y_values - f;
+squared_error = error_y.^2;
+s = sum(squared_error,'all');
+s = s/180;
+rmse = sqrt(s)
+plot(walking_x_values, walking_y_values, '.', walking_x_values, f, '-');
+xlabel('UTMEasting walking(meters)');
+ylabel('UTMNorthing walking(meters)');
+% title('Walking UTMnorthing vs UTmEsting');
+
